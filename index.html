@@ -3,93 +3,196 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Target Game - Unlock ZIP</title>
+    <title>Game - Unlock ZIP</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         text-align: center;
-        margin-top: 20px;
+        margin: 0;
+        background: #0d1117; /* dark bg */
+        color: #e6edf3;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
       h1 {
-        margin-bottom: 10px;
+        margin-bottom: 5px;
+        color: #58a6ff;
+        text-shadow: 0 0 10px #58a6ff;
+      }
+      p {
+        margin: 5px 0 15px;
+        color: #c9d1d9;
       }
       #gameArea {
         position: relative;
         width: 400px;
         height: 400px;
-        margin: 20px auto;
-        border: 2px solid #333;
-        background: #f9f9f9;
+        margin: 0 auto;
+        border-radius: 20px;
+        background: #161b22;
+        border: 3px solid #30363d;
         overflow: hidden;
+        box-shadow: 0 0 25px rgba(56, 139, 253, 0.4);
       }
       #target {
         position: absolute;
-        width: 50px;
-        height: 50px;
-        background: red;
-        border-radius: 50%;
+        width: 70px;
+        height: 70px;
         cursor: pointer;
+        transition: transform 0.1s;
+      }
+      #target img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 50%;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+      }
+      #scoreBox {
+        margin: 20px auto;
+        width: 300px;
+        background: #21262d;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 2px solid #30363d;
+        box-shadow: 0 0 15px rgba(88, 166, 255, 0.3);
+      }
+      #scoreProgress {
+        height: 20px;
+        background: linear-gradient(90deg, #ff4d6d, #f72585);
+        width: 0%;
+        transition: width 0.3s;
       }
       #downloadLink {
         display: none;
-        margin-top: 20px;
-        font-size: 18px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        font-size: 20px;
+        animation: fadeIn 1s ease-in-out;
+      }
+      #downloadLink h2 {
+        color: #ffb703;
+        text-shadow: 0 0 12px #ffb703;
+      }
+      #downloadLink a {
+        text-decoration: none;
+        background: #238636;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: bold;
+        margin: 5px;
+        box-shadow: 0 5px 20px rgba(35, 134, 54, 0.6);
+        transition: 0.3s;
+        display: inline-block;
+      }
+      #downloadLink a:hover {
+        background: #2ea043;
+        transform: scale(1.08);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
       }
     </style>
   </head>
   <body>
-    <h1>Target Shooting Game 🎯</h1>
-    <p>
-      Click the red circle to earn points. Get 10 points to unlock the file!
-    </p>
+    <h1>PINDUTIN MO LANG</h1>
+    <p>Get <b>10 points</b> to unlock your reward!</p>
 
-    <p>Score: <span id="score">0</span></p>
+    <div id="scoreBox">
+      <div id="scoreProgress"></div>
+    </div>
+    <p>Score: <span id="score">0</span>/10</p>
+
     <div id="gameArea">
-      <div id="target"></div>
+      <div id="target">
+        <img src="assets/bmm.jpg" alt="Target" />
+      </div>
     </div>
 
     <div id="downloadLink">
-      <h2>🎉 You Won! 🎉</h2>
-      <a href="assets/OrganizationProfile.zip" download>⬇ Download ZIP</a>
+      <h2>PILI KUPAL!!!</h2>
+      <a href="assets/OrganizationProfile.zip" download id="lab1">LabEx 1</a>
+      <a href="assets/InventoryApp.zip" download id="lab2">LabEx 2</a>
     </div>
+
+    <!-- Sound effect -->
+    <audio id="clickSound" src="assets/hehehe.mp3"></audio>
+    <audio
+      id="winSound"
+      src="https://www.soundjay.com/human/sounds/applause-8.mp3"
+    ></audio>
 
     <script>
       const target = document.getElementById("target");
       const scoreEl = document.getElementById("score");
+      const scoreProgress = document.getElementById("scoreProgress");
       const downloadDiv = document.getElementById("downloadLink");
       const gameArea = document.getElementById("gameArea");
+      const clickSound = document.getElementById("clickSound");
+      const winSound = document.getElementById("winSound");
 
       let score = 0;
+      let moveInterval;
 
-      // Move target to random position
       function moveTarget() {
         const areaWidth = gameArea.clientWidth - target.offsetWidth;
         const areaHeight = gameArea.clientHeight - target.offsetHeight;
-
         const x = Math.floor(Math.random() * areaWidth);
         const y = Math.floor(Math.random() * areaHeight);
-
         target.style.left = x + "px";
         target.style.top = y + "px";
       }
 
-      // Player clicks target
+      function startGame() {
+        score = 0;
+        scoreEl.textContent = score;
+        scoreProgress.style.width = "0%";
+        downloadDiv.style.display = "none";
+        target.style.display = "block";
+        moveTarget();
+        moveInterval = setInterval(moveTarget, 1000);
+      }
+
+      function resetGame() {
+        clearInterval(moveInterval);
+        gameArea.style.display = "block";
+        startGame();
+      }
+
       target.addEventListener("click", () => {
         score++;
         scoreEl.textContent = score;
+        scoreProgress.style.width = (score / 10) * 100 + "%";
+        clickSound.currentTime = 0;
+        clickSound.play();
 
         if (score >= 10) {
-          downloadDiv.style.display = "block"; // show download link
-          target.style.display = "none"; // hide target
-          clearInterval(moveInterval); // stop game
+          downloadDiv.style.display = "block";
+          target.style.display = "none";
+          gameArea.style.display = "none";
+          clearInterval(moveInterval);
+          winSound.play();
         } else {
-          moveTarget(); // move again
+          moveTarget();
         }
       });
 
-      // Move target every 1 second
-      const moveInterval = setInterval(moveTarget, 1000);
-      moveTarget();
+      // reset when clicking download links
+      document.getElementById("lab1").addEventListener("click", resetGame);
+      document.getElementById("lab2").addEventListener("click", resetGame);
+
+      startGame();
     </script>
   </body>
 </html>
