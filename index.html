@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Target Game - Unlock ZIP</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin-top: 20px;
+      }
+      h1 {
+        margin-bottom: 10px;
+      }
+      #gameArea {
+        position: relative;
+        width: 400px;
+        height: 400px;
+        margin: 20px auto;
+        border: 2px solid #333;
+        background: #f9f9f9;
+        overflow: hidden;
+      }
+      #target {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: red;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      #downloadLink {
+        display: none;
+        margin-top: 20px;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Target Shooting Game 🎯</h1>
+    <p>
+      Click the red circle to earn points. Get 10 points to unlock the file!
+    </p>
+
+    <p>Score: <span id="score">0</span></p>
+    <div id="gameArea">
+      <div id="target"></div>
+    </div>
+
+    <div id="downloadLink">
+      <h2>🎉 You Won! 🎉</h2>
+      <a href="assets/OrganizationProfile.zip" download>⬇ Download ZIP</a>
+    </div>
+
+    <script>
+      const target = document.getElementById("target");
+      const scoreEl = document.getElementById("score");
+      const downloadDiv = document.getElementById("downloadLink");
+      const gameArea = document.getElementById("gameArea");
+
+      let score = 0;
+
+      // Move target to random position
+      function moveTarget() {
+        const areaWidth = gameArea.clientWidth - target.offsetWidth;
+        const areaHeight = gameArea.clientHeight - target.offsetHeight;
+
+        const x = Math.floor(Math.random() * areaWidth);
+        const y = Math.floor(Math.random() * areaHeight);
+
+        target.style.left = x + "px";
+        target.style.top = y + "px";
+      }
+
+      // Player clicks target
+      target.addEventListener("click", () => {
+        score++;
+        scoreEl.textContent = score;
+
+        if (score >= 10) {
+          downloadDiv.style.display = "block"; // show download link
+          target.style.display = "none"; // hide target
+          clearInterval(moveInterval); // stop game
+        } else {
+          moveTarget(); // move again
+        }
+      });
+
+      // Move target every 1 second
+      const moveInterval = setInterval(moveTarget, 500);
+      moveTarget();
+    </script>
+  </body>
+</html>
